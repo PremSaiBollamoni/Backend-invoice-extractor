@@ -148,12 +148,29 @@ router.post('/export/csv', async (req, res) => {
 // Get logs
 router.get('/logs', async (req, res) => {
   try {
+    console.log('Fetching logs...');
     const logs = await getLogs();
+    console.log(`Found ${logs.length} logs`);
+    
+    // Add CORS headers explicitly for this endpoint
+    res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
+    res.header('Access-Control-Allow-Methods', 'GET');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    
     res.json({ success: true, logs });
   } catch (error) {
     console.error('Error fetching logs:', error);
-    res.status(500).json({ error: 'Failed to fetch logs' });
+    res.status(500).json({ error: 'Failed to fetch logs', message: error.message });
   }
+});
+
+// Test endpoint for logs
+router.get('/logs/test', async (req, res) => {
+  res.json({ 
+    message: 'Logs endpoint is working',
+    timestamp: new Date().toISOString(),
+    logsPath: 'Check /api/invoice/logs for actual logs'
+  });
 });
 
 export default router;
