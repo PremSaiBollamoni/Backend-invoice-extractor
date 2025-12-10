@@ -4,9 +4,15 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+export async function extractInvoiceData(pdfPath, apiKey) {
+  // Use provided API key or fallback to environment variable
+  const geminiApiKey = apiKey || process.env.GEMINI_API_KEY;
+  
+  if (!geminiApiKey) {
+    throw new Error('Gemini API key is required');
+  }
 
-export async function extractInvoiceData(pdfPath) {
+  const genAI = new GoogleGenerativeAI(geminiApiKey);
   try {
     // Read PDF file as base64
     const pdfBuffer = await fs.readFile(pdfPath);

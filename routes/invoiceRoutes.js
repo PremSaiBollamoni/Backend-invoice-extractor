@@ -41,6 +41,15 @@ router.post('/upload', upload.single('invoice'), async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
+    // Get API key from header
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey) {
+      return res.status(400).json({ 
+        error: 'Gemini API key is required',
+        message: 'Please provide your Gemini API key in the X-API-Key header'
+      });
+    }
+
     const filePath = req.file.path;
     const fileName = req.file.originalname;
 
@@ -52,8 +61,8 @@ router.post('/upload', upload.single('invoice'), async (req, res) => {
       timestamp: new Date().toISOString()
     });
 
-    // Extract data using Gemini
-    const extractedData = await extractInvoiceData(filePath);
+    // Extract data using Gemini with provided API key
+    const extractedData = await extractInvoiceData(filePath, apiKey);
 
     // Log success
     await logActivity({
